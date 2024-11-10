@@ -38,7 +38,7 @@ Train:
     image_dir: /mnt/workspace/xizhi/data/dresscode/DressCode/upper_body/label_maps/
 
   FashionTryon:
-    image_dir: path/TryOn/FashionTryOn/train
+    image_dir: ./TryOn/train
 
   Lvis:
     image_dir: path/COCO/train2017
