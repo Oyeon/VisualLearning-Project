@@ -1,0 +1,51 @@
+# Virtual Environment
+anydoor_env/
+
+# Model Checkpoints
+models/*.ckpt
+models/*.safetensors
+models/*.pth
+models/*.pt
+models/*.bin
+
+# Dataset and Results
+TryOn/
+lightning_logs/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Local development settings
+.env
+.env.local
+
+# CUDA/GPU related
+*.cu.o
+*.ptx
+*.cubin
+
+# Large media files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp4
+*.mov
+*.avi
