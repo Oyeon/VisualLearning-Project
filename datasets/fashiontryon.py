@@ -45,44 +45,57 @@ class FashionTryonDataset(BaseDataset):
     def get_sample(self, idx):
         cloth_dir = os.path.join(self.image_root, self.data[idx])
         ref_dir_path = [i for i in os.listdir(cloth_dir ) if '.jpg' not in i]
-        ref_dir_name = np.random.choice(ref_dir_path)
+        
+        ref_mask_path = os.path.join(cloth_dir, ref_dir_path, 'reference_mask.jpg')
+        if os.path.exists(ref_mask_path):
+            ref_dir_name = ref_dir_path
         ref_image_path = os.path.join(cloth_dir, ref_dir_name, ref_dir_name + '.jpg')
 
         ref_image = cv2.imread(ref_image_path)
         ref_image = cv2.cvtColor(ref_image.copy(), cv2.COLOR_BGR2RGB)
 
-        ref_mask_path = os.path.join(cloth_dir, ref_dir_name, 'reference_mask.png')
-        #ref_mask = cv2.imread(ref_mask_path)[:,:,0] > 128
+        ref_mask_path = os.path.join(cloth_dir, ref_dir_name, 'reference_mask.jpg')
         '''Do the same thing like the priginal one'''
         ref_mask = cv2.imread(ref_mask_path, cv2.IMREAD_GRAYSCALE)  # Read as grayscale
-        # Convert the black region to 1 and all other regions to 0
         ref_mask = (ref_mask == 0).astype(np.uint8)  # Black region (pixel value = 0) becomes 1, others become 0
 
         target_image_path = os.path.join(cloth_dir, 'target.jpg')
         target_image= cv2.imread(target_image_path)
         tar_image = cv2.cvtColor(target_image.copy(), cv2.COLOR_BGR2RGB)
-        '''Original'''
-        #target_dirs = [i for i in os.listdir(cloth_dir ) if '.jpg' not in i]
-        #target_dir_name = np.random.choice(target_dirs)
-        #target_image_path = os.path.join(cloth_dir, target_dir_name + '.jpg')
-        #target_image= cv2.imread(target_image_path)
-        #tar_image = cv2.cvtColor(target_image.copy(), cv2.COLOR_BGR2RGB)
 
         target_mask_path = os.path.join(cloth_dir, 'mask.jpg')
         tar_mask= cv2.imread(target_mask_path)
         tar_mask = (tar_mask > 0).astype(np.uint8)
         
-        '''Original'''
-        #target_mask_path = os.path.join(cloth_dir, target_dir_name, 'segment.png')
-        #tar_mask= cv2.imread(target_mask_path)
-        #tar_mask = (tar_mask > 0).astype(np.uint8)
-
-        #tar_mask= cv2.imread(target_mask_path)[:,:,0]
-        #target_mask =  tar_mask == 7        
-        #kernel = np.ones((3, 3), dtype=np.uint8)
-        #tar_mask = cv2.erode(target_mask.astype(np.uint8), kernel, iterations=3)
 
         item_with_collage = self.process_pairs(ref_image, ref_mask, tar_image, tar_mask, max_ratio = 1.0)
         sampled_time_steps = self.sample_timestep()
         item_with_collage['time_steps'] = sampled_time_steps
         return item_with_collage 
+    
+        #cloth_dir = os.path.join(self.image_root, self.data[idx])
+        #ref_image_path = os.path.join(cloth_dir, 'target.jpg')
+#
+        #ref_image = cv2.imread(ref_image_path)
+        #ref_image = cv2.cvtColor(ref_image.copy(), cv2.COLOR_BGR2RGB)
+#
+        #ref_mask_path = os.path.join(cloth_dir,'mask.jpg')
+        #ref_mask = cv2.imread(ref_mask_path)[:,:,0] > 128
+#
+        #target_dirs = [i for i in os.listdir(cloth_dir ) if '.jpg' not in i]
+        #target_dir_name = np.random.choice(target_dirs)
+#
+        #target_image_path = os.path.join(cloth_dir, target_dir_name + '.jpg')
+        #target_image= cv2.imread(target_image_path)
+        #tar_image = cv2.cvtColor(target_image.copy(), cv2.COLOR_BGR2RGB)
+#
+        #target_mask_path = os.path.join(cloth_dir, target_dir_name, 'segment.png')
+        #tar_mask= cv2.imread(target_mask_path)[:,:,0]
+        #target_mask =  tar_mask == 7        
+        #kernel = np.ones((3, 3), dtype=np.uint8)
+        #tar_mask = cv2.erode(target_mask.astype(np.uint8), kernel, iterations=3)
+#
+        #item_with_collage = self.process_pairs(ref_image, ref_mask, tar_image, tar_mask, max_ratio = 1.0)
+        #sampled_time_steps = self.sample_timestep()
+        #item_with_collage['time_steps'] = sampled_time_steps
+        #return item_with_collage

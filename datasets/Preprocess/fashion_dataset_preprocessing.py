@@ -151,19 +151,19 @@ def main():
             if file == 'coordinate.txt':
                 coordinate_path = os.path.join(root, file)
 
-                # 確定子目錄名稱，以便匹配對應的圖片文件名
+                
                 sub_dir_name = os.path.basename(root)  # e.g., "2" or "1_target"
-                parent_dir = os.path.dirname(root)  # 取得上層目錄
+                parent_dir = os.path.dirname(root)  
 
-                # 根據子目錄名稱來生成對應的圖片文件名
+                
                 image_file_name = f"{sub_dir_name}.jpg"
                 image_path = os.path.join(parent_dir, image_file_name)
 
-                # 確認圖片文件是否存在
+                
                 if os.path.exists(image_path):
                     reference_image_save_path = os.path.join(root, 'reference_mask.jpg')
 
-                    # 輸出路徑並呼叫函數
+                    
                     #print("Image Path:", image_path)
                     #print("Coordinate Path:", coordinate_path)
                     #print("Reference Image Save Path:", reference_image_save_path)
