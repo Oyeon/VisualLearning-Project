@@ -61,7 +61,16 @@ class FashionTryonDataset(BaseDataset):
         target_dirs = [i for i in os.listdir(cloth_dir ) if '.jpg' not in i]
         if not target_dirs:
             raise FileNotFoundError(f"No target directories found in {cloth_dir}")
-        target_dir_name = np.random.choice(target_dirs)
+        
+        
+        for dir_name in target_dirs:
+            target_mask_path = os.path.join(cloth_dir, dir_name, 'segment_binary_mask.png')
+            if os.path.exists(target_mask_path):
+                target_dir_name = dir_name
+                break
+            
+        if target_dir_name is None:
+            raise FileNotFoundError("No valid target directory with segment_binary_mask.png found.")
 
         target_image_path = os.path.join(cloth_dir, target_dir_name + '.jpg')
         if not os.path.exists(target_image_path):
@@ -110,3 +119,4 @@ class FashionTryonDataset(BaseDataset):
         #sampled_time_steps = self.sample_timestep()
         #item_with_collage['time_steps'] = sampled_time_steps
         #return item_with_collage
+        
