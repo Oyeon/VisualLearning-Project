@@ -20,13 +20,17 @@ disable_verbosity()
 if save_memory:
     enable_sliced_attention()
 
+resume_path = 'models/epoch=1-step=8687-pruned.ckpt'
+#model = create_model('./configs/inference.yaml').cpu()
+#model.load_state_dict(load_state_dict(resume_path, location='cuda'))
 
 config = OmegaConf.load('./configs/inference.yaml')
-model_ckpt =  config.pretrained_model
+#model_ckpt =  config.pretrained_model
 model_config = config.config_file
 
-model = create_model(model_config ).cpu()
-model.load_state_dict(load_state_dict(model_ckpt, location='cuda'))
+model = create_model(model_config).cpu()
+#model.load_state_dict(load_state_dict(model_ckpt, location='cuda'))
+model.load_state_dict(load_state_dict(resume_path, location='cpu'))
 model = model.cuda()
 ddim_sampler = DDIMSampler(model)
 
@@ -257,20 +261,65 @@ if __name__ == '__main__':
 
     from omegaconf import OmegaConf
     import os 
-    DConf = OmegaConf.load('./configs/datasets.yaml')
-    save_dir = './VITONGEN'
+    #DConf = OmegaConf.load('./configs/datasets.yaml')
+    save_dir = './VITONGEN2'
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
-    test_dir = DConf.Test.VitonHDTest.image_dir
+    '''
+    test_dir = '/home/sjohnny/gill/VPR/VisualLearning-Project/data/test'
+
+    # Iterate over all subdirectories in the test directory
+    for root, dirs, files in os.walk(test_dir):
+        for file in files:
+            if file == 'segment_vis.png':
+                tar_mask_path = os.path.join(root, file)
+                folder_name = os.path.basename(root)
+                tar_image_path = os.path.join(root, f"{folder_name}.jpg")
+                #print(ref_image_path)
+                
+                dirname = os.path.dirname(root)
+                ref_image_path = os.path.join(dirname, "target.jpg")
+                #print(tar_image_path)
+                ref_mask_path = os.path.join(dirname, "mask.jpg")
+    
+                # Read the reference image and target image
+                ref_image = cv2.imread(ref_image_path)
+                ref_image = cv2.cvtColor(ref_image, cv2.COLOR_BGR2RGB)
+
+                gt_image = cv2.imread(tar_image_path)
+                gt_image = cv2.cvtColor(gt_image, cv2.COLOR_BGR2RGB)
+
+                # Read and preprocess the reference mask
+                ref_mask = (cv2.imread(ref_mask_path) > 128).astype(np.uint8)[:, :, 0]
+
+                # Read and preprocess the target mask
+                tar_mask = Image.open(tar_mask_path).convert('P')
+                tar_mask = np.array(tar_mask)
+                tar_mask = tar_mask == 5  # Assume the target class is labeled as 5
+
+                # Perform inference
+                gen_image = inference_single_image(ref_image, ref_mask, gt_image.copy(), tar_mask)
+
+                # Save the generated image
+                gen_path = os.path.join(save_dir, f"{folder_name}_gen.jpg")
+                vis_image = cv2.hconcat([ref_image, gt_image, gen_image])
+                cv2.imwrite(gen_path, vis_image[:, :, ::-1])  # Convert RGB to BGR for saving
+                print(f"Saved generated image to {gen_path}")
+    '''
+    
+    #test_dir = DConf.Test.VitonHDTest.image_dir
+    test_dir = '/home/sjohnny/gill/VPR/VisualLearning-Project/data/test2/cloth'
     image_names = os.listdir(test_dir)
+        
     
     for image_name in image_names:
+        
         ref_image_path = os.path.join(test_dir, image_name)
         tar_image_path = ref_image_path.replace('/cloth/', '/image/')
-        ref_mask_path = ref_image_path.replace('/cloth/','/cloth-mask/')
-        tar_mask_path = ref_image_path.replace('/cloth/', '/image-parse-v3/').replace('.jpg','.png')
-
+        ref_mask_path = ref_image_path.replace('/cloth/','/cloth_mask/')
+        tar_mask_path = ref_image_path.replace('/cloth/', '/image-parse-v3/')
+        
         ref_image = cv2.imread(ref_image_path)
         ref_image = cv2.cvtColor(ref_image, cv2.COLOR_BGR2RGB)
 
@@ -288,7 +337,3 @@ if __name__ == '__main__':
 
         vis_image = cv2.hconcat([ref_image, gt_image, gen_image])
         cv2.imwrite(gen_path, vis_image[:,:,::-1])
-    #'''
-
-    
-
